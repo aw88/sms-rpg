@@ -13,12 +13,14 @@ void init_player(char tile_x, char tile_y) {
   player.state = STATE_STATIONARY;
   player.sprite_a = SMS_reserveSprite();
   player.sprite_b = SMS_reserveSprite();
+  player.just_warped = 1;
 }
 
 void update_player(unsigned int input) {
   #define SET_PLAYER_STATE(new_state, timer)                                   \
       player.state = new_state;                                                \
-      player.state_timer = timer;
+      player.state_timer = timer;                                              \
+      player.just_warped = 0;
 
   #define SET_PLAYER_SPRITE(facing)                                            \
       SMS_updateSpriteImage(player.sprite_a, facing);                          \
@@ -28,12 +30,12 @@ void update_player(unsigned int input) {
     case STATE_STATIONARY:
       handle_stationary:
       {
-        _warp_point *warp_point = find_warp_point(player.tile_x, player.tile_y);
+        if (!player.just_warped) {
+          _warp_point *warp_point = find_warp_point(player.tile_x, player.tile_y);
 
-        if (warp_point) {
-          SMS_setSpritePaletteColor(0, 0x3f);
-        } else {
-          SMS_setSpritePaletteColor(0, 0x00);
+          if (warp_point) {
+            handle_warp_point(&player, warp_point);
+          }
         }
 
         if (input & PORT_A_KEY_DOWN) {

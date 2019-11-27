@@ -17,6 +17,7 @@ typedef struct {
   signed char sprite_b;
   char state;
   char state_timer;
+  char just_warped;
 } _player;
 
 void init_player(char, char);

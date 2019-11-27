@@ -31,8 +31,13 @@ unsigned char map_tiles_2[MAP_SIZE] = {
 };
 
 _warp_point warp_points[] = {
-  { .tile_x = 0x07, .tile_y = 0x00, .target_map = map_tiles_2, .target_x = 0x07, .target_y = 0x0d },
-  { .tile_x = 0x08, .tile_y = 0x00, .target_map = map_tiles_2, .target_x = 0x08, .target_y = 0x0d },
+  { .tile_x = 0x07, .tile_y = 0x00, .target_map = map_tiles_2, .target_x = 0x07, .target_y = 0x0b },
+  { .tile_x = 0x08, .tile_y = 0x00, .target_map = map_tiles_2, .target_x = 0x08, .target_y = 0x0b },
+};
+
+_warp_point warp_points_2[] = {
+  { .tile_x = 0x07, .tile_y = 0x0b, .target_map = map_tiles, .target_x = 0x07, .target_y = 0x00 },
+  { .tile_x = 0x08, .tile_y = 0x0b, .target_map = map_tiles, .target_x = 0x08, .target_y = 0x00 },
 };
 
 unsigned int _meta_tiles[][4] = {
@@ -46,6 +51,9 @@ unsigned int _meta_tiles[][4] = {
   { 0x88, 0x89, 0x8c, 0x8d }
 };
 
+char *current_map_tiles = map_tiles;
+_warp_point *current_warp_points = warp_points;
+
 void init_map() {
 }
 
@@ -53,14 +61,14 @@ void _draw_map_row(char row_number) {
   SMS_setNextTileatXY(0, (row_number << 1));
 
   for (char x = 0; x < MAP_WIDTH; ++x) {
-    const char meta_tile_idx = map_tiles[row_number * MAP_WIDTH + x];
+    const char meta_tile_idx = current_map_tiles[row_number * MAP_WIDTH + x];
 
     SMS_setTile(_meta_tiles[meta_tile_idx][0]);
     SMS_setTile(_meta_tiles[meta_tile_idx][1]);
   }
 
   for (char x = 0; x < MAP_WIDTH; ++x) {
-    const char meta_tile_idx = map_tiles[row_number * MAP_WIDTH + x];
+    const char meta_tile_idx = current_map_tiles[row_number * MAP_WIDTH + x];
 
     SMS_setTile(_meta_tiles[meta_tile_idx][2]);
     SMS_setTile(_meta_tiles[meta_tile_idx][3]);
@@ -75,12 +83,12 @@ void draw_map() {
 }
 
 _warp_point *find_warp_point(char tile_x, char tile_y) {
-  const char count = sizeof(warp_points) / sizeof(_warp_point);
+  const char count = 2;
 
   for (unsigned char n = 0; n < count; ++n) {
-    if (tile_x == warp_points[n].tile_x
-        && tile_y == warp_points[n].tile_y) {
-      return &warp_points[n];
+    if (tile_x == current_warp_points[n].tile_x
+        && tile_y == current_warp_points[n].tile_y) {
+      return &current_warp_points[n];
     }
   }
 
@@ -88,5 +96,46 @@ _warp_point *find_warp_point(char tile_x, char tile_y) {
 }
 
 char lookup_tile(char tile_x, char tile_y) {
-  return map_tiles[tile_y * MAP_WIDTH + tile_x];
+  return current_map_tiles[tile_y * MAP_WIDTH + tile_x];
+}
+
+void handle_warp_point(_player *player, _warp_point *warp_point) {
+  player->tile_y = warp_point->target_x;
+  player->pos_x = warp_point->target_x * 16;
+  player->tile_y = warp_point->target_y;
+  player->pos_y = warp_point->target_y * 16;
+  player->just_warped = 1;
+
+  current_map_tiles = warp_point->target_map;
+  current_warp_points = (current_warp_points == warp_points) ? warp_points_2 : warp_points;
+
+  SMS_waitForVBlank();
+  reload_bg_palette_half_brightness(1);
+  reload_sprite_palette_half_brightness(1);
+  SMS_waitForVBlank();
+  SMS_waitForVBlank();
+  SMS_waitForVBlank();
+  SMS_waitForVBlank();
+  SMS_displayOff();
+
+  SMS_waitForVBlank();
+  SMS_waitForVBlank();
+  SMS_waitForVBlank();
+  SMS_waitForVBlank();
+
+  SMS_updateSpritePosition(player->sprite_a, player->pos_x, player->pos_y);
+  SMS_updateSpritePosition(player->sprite_b, player->pos_x + 8, player->pos_y);
+  SMS_copySpritestoSAT();
+
+  draw_map();
+
+  SMS_displayOn();
+
+  SMS_waitForVBlank();
+  SMS_waitForVBlank();
+  SMS_waitForVBlank();
+  SMS_waitForVBlank();
+
+  reload_bg_palette_half_brightness(0);
+  reload_sprite_palette_half_brightness(0);
 }
