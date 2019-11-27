@@ -3,17 +3,17 @@
 void *current_bg_palette;
 void *current_sprite_palette;
 
-void load_bg_palette(void *palette) {
+void load_bg_palette(void *palette) __z88dk_fastcall {
   current_bg_palette = palette;
   SMS_loadBGPalette(palette);
 }
 
-void load_sprite_palette(void *palette) {
+void load_sprite_palette(void *palette) __z88dk_fastcall {
   current_sprite_palette = palette;
   SMS_loadSpritePalette(palette);
 }
 
-void reload_bg_palette_half_brightness(char brightness) {
+void reload_bg_palette_half_brightness(char brightness) __z88dk_fastcall {
   if (brightness) {
     SMS_loadBGPaletteHalfBrightness(current_bg_palette);
   } else {
@@ -21,7 +21,7 @@ void reload_bg_palette_half_brightness(char brightness) {
   }
 }
 
-void reload_sprite_palette_half_brightness(char brightness) {
+void reload_sprite_palette_half_brightness(char brightness) __z88dk_fastcall {
   if (brightness) {
     SMS_loadSpritePaletteHalfBrightness(current_sprite_palette);
   } else {
