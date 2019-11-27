@@ -27,29 +27,39 @@ void update_player(unsigned int input) {
   switch (player.state) {
     case STATE_STATIONARY:
       handle_stationary:
-      if (input & PORT_A_KEY_DOWN) {
-        SET_PLAYER_SPRITE(0x00);
-        if (player_can_move(player.tile_x, player.tile_y + 1)) {
-          SET_PLAYER_STATE(STATE_MOVE_DOWN, 16);
-          player.tile_y++;
+      {
+        _warp_point *warp_point = find_warp_point(player.tile_x, player.tile_y);
+
+        if (warp_point) {
+          SMS_setSpritePaletteColor(0, 0x3f);
+        } else {
+          SMS_setSpritePaletteColor(0, 0x00);
         }
-      } else if (input & PORT_A_KEY_UP) {
-        SET_PLAYER_SPRITE(0x04);
-        if (player_can_move(player.tile_x, player.tile_y - 1)) {
-          SET_PLAYER_STATE(STATE_MOVE_UP, 16);
-          player.tile_y--;
-        }
-      } else if (input & PORT_A_KEY_RIGHT) {
-        SET_PLAYER_SPRITE(0x08);
-        if (player_can_move(player.tile_x + 1, player.tile_y)) {
-          SET_PLAYER_STATE(STATE_MOVE_RIGHT, 16);
-          player.tile_x++;
-        }
-      } else if (input & PORT_A_KEY_LEFT) {
-        SET_PLAYER_SPRITE(0x0c);
-        if (player_can_move(player.tile_x - 1, player.tile_y)) {
-          SET_PLAYER_STATE(STATE_MOVE_LEFT, 16);
-          player.tile_x--;
+
+        if (input & PORT_A_KEY_DOWN) {
+          SET_PLAYER_SPRITE(0x00);
+          if (player_can_move(player.tile_x, player.tile_y + 1)) {
+            SET_PLAYER_STATE(STATE_MOVE_DOWN, 16);
+            player.tile_y++;
+          }
+        } else if (input & PORT_A_KEY_UP) {
+          SET_PLAYER_SPRITE(0x04);
+          if (player_can_move(player.tile_x, player.tile_y - 1)) {
+            SET_PLAYER_STATE(STATE_MOVE_UP, 16);
+            player.tile_y--;
+          }
+        } else if (input & PORT_A_KEY_RIGHT) {
+          SET_PLAYER_SPRITE(0x08);
+          if (player_can_move(player.tile_x + 1, player.tile_y)) {
+            SET_PLAYER_STATE(STATE_MOVE_RIGHT, 16);
+            player.tile_x++;
+          }
+        } else if (input & PORT_A_KEY_LEFT) {
+          SET_PLAYER_SPRITE(0x0c);
+          if (player_can_move(player.tile_x - 1, player.tile_y)) {
+            SET_PLAYER_STATE(STATE_MOVE_LEFT, 16);
+            player.tile_x--;
+          }
         }
       }
       break;
