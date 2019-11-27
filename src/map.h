@@ -9,13 +9,15 @@
 #define MAP_HEIGHT          12
 #define MAP_SIZE            (MAP_WIDTH * MAP_HEIGHT)
 
+#define WARP_POINT_X(pos)   (pos >> 4)
+#define WARP_POINT_Y(pos)   (pos & 0x0f)
+#define MAKE_WARP_POS(x, y) (((((x) & 0x0f) << 4) | ((y) & 0x0f)) & 0xff)
+
 typedef struct _warp_point {
-  char tile_x;
-  char tile_y;
+  char tile_pos;
+  char target_pos;
 
   char* target_map;
-  char target_x;
-  char target_y;
 } _warp_point;
 
 void init_map();
