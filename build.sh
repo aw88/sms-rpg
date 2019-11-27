@@ -1,6 +1,6 @@
 #/usr/bin/env sh
 
-OUTPUT_NAME=pkmn
+OUTPUT_NAME=rpg
 
 build_assets () {
   echo "Building assets."
