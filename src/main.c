@@ -16,7 +16,7 @@ void main (void) {
   RL_init_graphics();
   SMS_initSprites();
 
-  init_player(4, 8);
+  init_player(8, 4);
 
   SMS_VDPturnOnFeature(VDPFEATURE_USETALLSPRITES);
 
