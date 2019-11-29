@@ -5,6 +5,10 @@
 
 #include "../out/bank2.h"
 
+#define TEXT_ASCII_OFFSET 128
+
+void write_string_at(char tile_x, char tile_y, char* string);
+
 void load_bg_palette(void *palette) __z88dk_fastcall;
 void load_sprite_palette(void *palette) __z88dk_fastcall;
 

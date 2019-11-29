@@ -29,6 +29,17 @@ void reload_sprite_palette_half_brightness(char brightness) __z88dk_fastcall {
   }
 }
 
+void write_string_at(char tile_x, char tile_y, char* string) {
+  SMS_setNextTileatXY(tile_x, tile_y);
+
+  char *c = string;
+
+  while (*c) {
+    int next_tile = (*c++) + TEXT_ASCII_OFFSET;
+    SMS_setTile(next_tile);
+  }
+}
+
 void RL_init_graphics(void) {
   SMS_mapROMBank(tiles_pal_bank);
   load_bg_palette(tiles_pal);
@@ -44,4 +55,7 @@ void RL_init_graphics(void) {
 
   SMS_mapROMBank(sprites_bank);
   SMS_loadTiles(sprites, 0x100, sprites_size);
+
+  SMS_mapROMBank(font_bank);
+  SMS_loadTiles(font, 0x0A0, font_size);
 }
