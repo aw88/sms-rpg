@@ -1,4 +1,4 @@
-#/usr/bin/env sh
+#!/usr/bin/env sh
 
 OUTPUT_NAME=rpg
 
@@ -9,14 +9,14 @@ build_assets () {
   mv bank*.h bank*.rel out/
 }
 
-if [ "$1" == "clean" ]; then
+if [ "$1" = "clean" ]; then
   echo "Cleaning build artifacts."
   rm out/*
 
   exit 0
 fi
 
-if [ "$1" == "assets" ]; then
+if [ "$1" = "assets" ]; then
   build_assets
   exit 0
 fi
