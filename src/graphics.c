@@ -59,3 +59,37 @@ void RL_init_graphics(void) {
   SMS_mapROMBank(font_bank);
   SMS_loadTiles(font, 0x0A0, font_size);
 }
+
+// Zero out the SAT
+char vram_first_byte = 0xd0;
+void disable_sprites(void) {
+  __asm
+    ld hl, #0x3f00
+    call _SMS_crt0_RST08    ; Read from 0x3f00 (SAT)
+
+    in a, (#0xbe)   ; read from buffer into a
+    ld hl, #_vram_first_byte
+    ld (hl), a
+
+    ld hl, #0x7f00
+    call _SMS_crt0_RST08     ; Write to 0x3f00 (SAT)
+    ld hl, #0x00d0
+    call _SMS_crt0_RST18     ; Write 0xd0 to SAT
+  __endasm;
+}
+
+// Repopulate the SAT
+void enable_sprites(void) {
+  __asm
+    ld hl, #0x7f00
+    call _SMS_crt0_RST08    ; Write to 0x3f00
+
+    ld hl, #_vram_first_byte
+    ld a, (hl)
+
+    ld h, #0x00
+    ld l, a
+
+    call _SMS_crt0_RST18
+  __endasm;
+}

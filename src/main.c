@@ -26,6 +26,7 @@ void main (void) {
   SMS_updateSpriteImage(player.sprite_b, 0x02);
 
   draw_map();
+  write_string_at(0, 20, "Hello, Sega Master System!");
 
   SMS_displayOn();
 
@@ -43,19 +44,23 @@ void main (void) {
   }
 }
 
-void handle_pause(void) {
+void enter_pause(void) {
   SMS_resetPauseRequest();
-
   reload_bg_palette_half_brightness(1);
-  reload_sprite_palette_half_brightness(1);
+  disable_sprites();
+}
+
+void handle_pause(void) {
+  enter_pause();
 
   for (;;) {
     if (SMS_queryPauseRequested()) {
-      SMS_waitForVBlank();
-      reload_bg_palette_half_brightness(0);
-      reload_sprite_palette_half_brightness(0);
       SMS_resetPauseRequest(); 
-      return;
+      break;
     }
   }
+
+  SMS_waitForVBlank();
+  enable_sprites();
+  reload_bg_palette_half_brightness(0);
 }
