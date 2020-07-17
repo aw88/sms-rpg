@@ -1,17 +1,22 @@
 #include "SMSlib.h"
+#include "battle.h"
+#include "graphics.h"
+#include "map.h"
+#include "player.h"
 #include "rom_header.h"
 
-#include "graphics.h"
-#include "player.h"
-#include "map.h"
+#define DO_BATTLE
 
 void handle_pause(void);
 
 extern _player player;
 
-void main (void) {
+void main(void) {
   SMS_init();
 
+#ifdef DO_BATTLE
+  battle_loop();
+#else
   init_map();
   RL_init_graphics();
   SMS_initSprites();
@@ -42,6 +47,7 @@ void main (void) {
       handle_pause();
     }
   }
+#endif
 }
 
 void enter_pause(void) {
@@ -55,7 +61,7 @@ void handle_pause(void) {
 
   for (;;) {
     if (SMS_queryPauseRequested()) {
-      SMS_resetPauseRequest(); 
+      SMS_resetPauseRequest();
       break;
     }
   }
